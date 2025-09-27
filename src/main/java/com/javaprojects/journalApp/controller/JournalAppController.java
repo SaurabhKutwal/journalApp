@@ -1,6 +1,9 @@
 package com.javaprojects.journalApp.controller;
 
+
 import com.javaprojects.journalApp.entity.JournalEntry;
+import com.javaprojects.journalApp.service.JournalEntryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,33 +15,34 @@ import java.util.Map;
 @RequestMapping("/journal")
 public class JournalAppController {
 
-    private final Map<Long, JournalEntry> journalEntries = new HashMap<>();
+    @Autowired
+    private JournalEntryService journalEntryService;
 
     @GetMapping("/getall")
     public List<JournalEntry> getAll(){
-        return new ArrayList<>(journalEntries.values());
+        return journalEntryService.getAllEntries();
     }
 
     @PostMapping("/makeentry")
     public boolean createEntry(@RequestBody JournalEntry journalEntry){
-        journalEntries.put(journalEntry.getId(),journalEntry);
+        journalEntryService.saveEntry(journalEntry);
         return true;
     }
 
     @GetMapping("/id/{entryId}")
-    public JournalEntry getEntryById(@PathVariable Long entryId ){
-        return journalEntries.get(entryId);
+    public JournalEntry getEntryById(@PathVariable String entryId ){
+        return journalEntryService.getEntryById(entryId);
     }
 
     @DeleteMapping("/id/{entryId}")
-    public String deleteEntry(@PathVariable Long entryId){
-        journalEntries.remove(entryId);
+    public String deleteEntry(@PathVariable String entryId){
+        journalEntryService.deleteEntry(entryId);
         return "Entry Deleted";
     }
 
     @PutMapping
     public String updateEntry(@RequestBody JournalEntry journalEntry){
-        journalEntries.put(journalEntry.getId(),journalEntry);
+        journalEntryService.updateEntry(journalEntry);
         return "Entry Updated";
     }
 
